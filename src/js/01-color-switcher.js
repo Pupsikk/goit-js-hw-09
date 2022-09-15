@@ -1,53 +1,32 @@
-// Импортируем 
-const startBtn = document.querySelector('button[data-start]');
-const stopBtn = document.querySelector('button[data-stop]');
+import '../css/common.css';
 
-// Создание рандомного цвета
 function getRandomHexColor() {
-    return `#${Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, 0)}`;
+  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
-//Создаем в html коде стиль backgroundColor
-function updateBodyBGcolor(color) {
-    document.body.style.backgroundColor = color;
+const refs = {
+  body: document.querySelector('body'),
+  btnStart: document.querySelector('button[data-start]'),
+  btnStop: document.querySelector('button[data-stop]'),
+};
+
+let timerId = null;
+refs.btnStop.disabled = true;
+
+refs.btnStart.addEventListener('click', onStartClick);
+refs.btnStop.addEventListener('click', onStopClick);
+
+function onStartClick() {
+  refs.btnStop.disabled = false;
+  refs.btnStart.disabled = true;
+  timerId = setInterval(() => {
+    let switchColor = getRandomHexColor();
+    refs.body.style.backgroundColor = switchColor;
+  }, 1000);
 }
 
-class ColorSwitcher {
-    constructor(updateBodyBGcolor) {
-    this.intervalID = null;
-    this.isActive = false;
-    this.updateBodyBGcolor = updateBodyBGcolor;
-    stopBtn.disabled = true;
-    }
-
-    //Старт для начала рандома цветов и делает кнопку не активной  
-    startChangeBGcolor() {
-        if (this.isActive) {
-        return;
-        }
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-
-        this.isActive = true;
-        this.intervalID = setInterval(
-            () => updateBodyBGcolor(getRandomHexColor()),
-            1000
-        );
-    }
-    
-    //Останавливает рандом цветов и делает кнопку не активной  
-    stopChangeBGcolor() {
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-
-        clearInterval(this.intervalID);
-        this.isActive = false;
-    }
+function onStopClick() {
+  clearInterval(timerId);
+  refs.btnStop.disabled = true;
+  refs.btnStart.disabled = false;
 }
-
-const colorSwitcher = new ColorSwitcher();
-
-startBtn.addEventListener('click', () => colorSwitcher.startChangeBGcolor());
-stopBtn.addEventListener('click', () => colorSwitcher.stopChangeBGcolor());
